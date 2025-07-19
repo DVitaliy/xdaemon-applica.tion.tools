@@ -1,0 +1,55 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🛒 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📦 Build project
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+          pnpm build
+
+      - name: 🧬 Create .env file
+        run: |
+          echo "GITHUB_CLIENT_ID=${{ secrets.CLIENT_ID }}" >> .env
+          echo "GITHUB_CLIENT_SECRET=${{ secrets.CLIENT_SECRET }}" >> .env
+
+      - name: 📂 Upload build and configs to server
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "dist/,.env,docker-compose.yml,Dockerfile,pnpm-lock.yaml,package.json,pnpm-workspace.yaml"
+          target: "~/_md2pdf"
+          rm: true
+          strip_components: 0
+
+      - name: 🚀 Deploy with Docker Compose
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            rm -rf ~/md2pdf
+            mv ~/_md2pdf ~/md2pdf
+
+            cd ~/md2pdf
+
+            docker-compose -p md2pdf down --rmi all --volumes --remove-orphans || true
+            docker rmi -f md2pdf-app:latest 2>/dev/null || true
+            docker-compose -p md2pdf build --no-cache --pull
+            docker-compose -p md2pdf up -d
+            docker system prune -af --filter "label=com.docker.compose.project=md2pdf"
