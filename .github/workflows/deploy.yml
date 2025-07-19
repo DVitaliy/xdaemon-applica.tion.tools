@@ -18,11 +18,6 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm build
 
-      - name: 🧬 Create .env file
-        run: |
-          echo "GITHUB_CLIENT_ID=${{ secrets.CLIENT_ID }}" >> .env
-          echo "GITHUB_CLIENT_SECRET=${{ secrets.CLIENT_SECRET }}" >> .env
-
       - name: 📂 Upload build and configs to server
         uses: appleboy/scp-action@v1.0.0
         with:
@@ -30,8 +25,8 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "dist/,.env,docker-compose.yml,Dockerfile,pnpm-lock.yaml,package.json,pnpm-workspace.yaml"
-          target: "~/_md2pdf"
+          source: 'dist/,server.js,docker-compose.yml,Dockerfile,pnpm-lock.yaml,package.json,pnpm-workspace.yaml'
+          target: '~/_xdaemon'
           rm: true
           strip_components: 0
 
@@ -43,13 +38,13 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            rm -rf ~/md2pdf
-            mv ~/_md2pdf ~/md2pdf
+            rm -rf ~/xdaemon
+            mv ~/_xdaemon ~/xdaemon
 
-            cd ~/md2pdf
+            cd ~/xdaemon
 
-            docker-compose -p md2pdf down --rmi all --volumes --remove-orphans || true
-            docker rmi -f md2pdf-app:latest 2>/dev/null || true
-            docker-compose -p md2pdf build --no-cache --pull
-            docker-compose -p md2pdf up -d
-            docker system prune -af --filter "label=com.docker.compose.project=md2pdf"
+            docker-compose -p xdaemon down --rmi all --volumes --remove-orphans || true
+            docker rmi -f xdaemon-app:latest 2>/dev/null || true
+            docker-compose -p xdaemon build --no-cache --pull
+            docker-compose -p xdaemon up -d
+            docker system prune -af --filter "label=com.docker.compose.project=xdaemon"
