@@ -12,24 +12,6 @@ jobs:
       - name: 🛒 Checkout repository
         uses: actions/checkout@v4
 
-      - name: 📦 Build project
-        run: |
-          corepack enable
-          pnpm install --frozen-lockfile
-          pnpm build
-
-      - name: 📂 Upload build and configs to server
-        uses: appleboy/scp-action@v1.0.0
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: '.env,logs.json,dist/,server.js,docker-compose.yml,Dockerfile,pnpm-lock.yaml,package.json,pnpm-workspace.yaml'
-          target: '~/_xdaemon'
-          rm: true
-          strip_components: 0
-
       - name: 🚀 Deploy with Docker Compose
         uses: appleboy/ssh-action@v1.2.2
         with:
@@ -38,13 +20,29 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            rm -rf ~/xdaemon
-            mv ~/_xdaemon ~/xdaemon
+            set -e
 
-            cd ~/xdaemon
+            APP_DIR=~/xdaemon
+            REPO_URL="https://github.com/${{ github.repository }}.git"
 
+            if [ -d "$APP_DIR/.git" ]; then
+              echo "🔄 Pull repo..."
+              cd $APP_DIR
+              git pull origin main
+            else
+              echo "⬇️ Clone repo..."
+              git clone $REPO_URL $APP_DIR
+              cd $APP_DIR
+            fi
+
+            echo "🐳 Restart..."
             docker-compose -p xdaemon down --rmi all --volumes --remove-orphans || true
             docker rmi -f xdaemon-app:latest 2>/dev/null || true
             docker-compose -p xdaemon build --no-cache --pull
             docker-compose -p xdaemon up -d
             docker system prune -af --filter "label=com.docker.compose.project=xdaemon"
+
+            echo "✅ Status check"
+            docker-compose ps
+
+            echo "🎉 Deployment completed successfully!"

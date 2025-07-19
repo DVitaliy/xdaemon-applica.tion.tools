@@ -74,7 +74,7 @@ const templateHtml = isProduction ? await fs.readFile('./dist/client/index.html'
 // Create http server
 const app = express()
 app.use(express.json())
-app.use('/logs', router)
+app.use('/api/logs', router)
 
 // Add Vite or respective production middlewares
 /** @type {import('vite').ViteDevServer | undefined} */
