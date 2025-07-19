@@ -24,7 +24,7 @@ router.post('/', async (req, res) => {
   const { Owner, LogText } = req.body
 
   const logs = await loadLogs()
-  const newLog = { id: logs.length + 1, Owner, CreatedAt: new Date().toISOString(), UpdatedAt: new Date().toISOString(), LogText }
+  const newLog = { id: logs[logs.length - 1].id + 1, Owner, CreatedAt: new Date().toISOString(), UpdatedAt: new Date().toISOString(), LogText }
 
   logs.push(newLog)
   await saveLogs(logs)
