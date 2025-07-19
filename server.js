@@ -1,5 +1,67 @@
 import fs from 'node:fs/promises'
-import express from 'express'
+import express, { Router } from 'express'
+import path from 'node:path'
+
+const logsPath = path.join(process.cwd(), 'logs.json')
+
+async function loadLogs() {
+  const raw = await fs.readFile(logsPath, 'utf-8')
+  return JSON.parse(raw)
+}
+
+async function saveLogs(logs) {
+  await fs.writeFile(logsPath, JSON.stringify(logs, null, 2))
+}
+
+const router = Router()
+
+router.get('/', async (req, res) => {
+  const logs = await loadLogs()
+  res.json(logs)
+})
+
+router.post('/', async (req, res) => {
+  const { Owner, LogText } = req.body
+
+  const logs = await loadLogs()
+  const newLog = { id: logs.length + 1, Owner, CreatedAt: new Date().toISOString(), UpdatedAt: new Date().toISOString(), LogText }
+
+  logs.push(newLog)
+  await saveLogs(logs)
+
+  res.status(201).json({ message: 'Log created', data: newLog })
+})
+
+router.put('/:id', async (req, res) => {
+  const logs = await loadLogs()
+  const logIndex = logs.findIndex((log) => log.id === parseInt(req.params.id))
+  if (logIndex === -1) {
+    return res.status(404).json({ message: 'Log not found' })
+  }
+  const log = logs[logIndex]
+  if (!log) {
+    return res.status(404).json({ message: 'Log not found' })
+  }
+
+  const { Owner, LogText } = req.body
+  log.Owner = Owner
+  log.LogText = LogText
+  log.UpdatedAt = new Date().toISOString()
+
+  logs[logIndex] = log
+  await saveLogs(logs)
+  res.json({ message: `Log ${req.params.id} updated`, data: log })
+})
+
+router.delete('/:id', async (req, res) => {
+  const logs = await loadLogs()
+  const updatedLogs = logs.filter((log) => log.id !== parseInt(req.params.id))
+  if (updatedLogs.length === logs.length) {
+    return res.status(404).json({ message: 'Log not found' })
+  }
+  await saveLogs(updatedLogs)
+  res.json({ message: `Log ${req.params.id} deleted` })
+})
 
 // Constants
 const isProduction = process.env.NODE_ENV === 'production'
@@ -11,6 +73,8 @@ const templateHtml = isProduction ? await fs.readFile('./dist/client/index.html'
 
 // Create http server
 const app = express()
+app.use(express.json())
+app.use('/logs', router)
 
 // Add Vite or respective production middlewares
 /** @type {import('vite').ViteDevServer | undefined} */

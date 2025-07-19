@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "Owner": "admin",
+    "CreatedAt": "2023-10-01",
+    "UpdatedAt": "2023-10-02",
+    "LogText": "Initial log entry"
+  },
+  {
+    "id": 2,
+    "Owner": "user1",
+    "CreatedAt": "2023-10-03",
+    "UpdatedAt": "2023-10-04",
+    "LogText": "User log entry"
+  },
+  {
+    "id": 3,
+    "Owner": "user2",
+    "CreatedAt": "2023-10-05",
+    "UpdatedAt": "2023-10-06",
+    "LogText": "User 2 log entry"
+  }
+]

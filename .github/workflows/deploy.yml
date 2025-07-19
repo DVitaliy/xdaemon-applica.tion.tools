@@ -25,7 +25,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: '.env,dist/,server.js,docker-compose.yml,Dockerfile,pnpm-lock.yaml,package.json,pnpm-workspace.yaml'
+          source: '.env,logs.json,dist/,server.js,docker-compose.yml,Dockerfile,pnpm-lock.yaml,package.json,pnpm-workspace.yaml'
           target: '~/_xdaemon'
           rm: true
           strip_components: 0
