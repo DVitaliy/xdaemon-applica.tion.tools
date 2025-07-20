@@ -1,36 +1,19 @@
-'use client'
-
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import Logo from '@/components/ui/Logo'
-
-export default function HeaderLayout() {
-  const pathname = usePathname()
-
-  const menuItems = [
-    { name: 'Home', href: '/' },
-    { name: 'Clients', href: '/clients' }
-  ]
-
-  const isActive = (href: string) => {
-    if (href === '/') return pathname === '/'
-    return pathname === href || pathname.startsWith(`${href}/`)
-  }
-
+export default function HeaderComponent() {
   return (
-    <header className="__header flex justify-between items-center">
-      <Logo />
-      <nav>
-        <ul className="flex gap-4">
-          {menuItems.map(({ name, href }) => (
-            <li key={href}>
-              <Link href={href} className={isActive(href) ? '__active' : ''}>
-                {name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
+    <header
+      className="bg-white shadow-sm border-b border-gray-200
+                mb-6 sm:mb-9">
+      <div className="flex justify-between items-center h-12 sm:h-16 container mx-auto">
+        <div className="flex items-center space-x-3 overflow-hidden">
+          <div className="flex-shrink-0 text-xl sm:text-3xl">📋</div>
+          <h1 className="text-lg sm:text-xl font-semibold truncate">Log Management System</h1>
+        </div>
+
+        <div className="flex items-center space-x-2 text-sm text-gray-600">
+          <span className="text-lg">⚤</span>
+          <span>Admin</span>
+        </div>
+      </div>
     </header>
   )
 }

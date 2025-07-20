@@ -17,7 +17,8 @@
     "next": "^15",
     "react": "^19",
     "react-dom": "^19",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -43,6 +44,6 @@
     "printWidth": 180,
     "tabWidth": 2,
     "useTabs": false,
-    "bracketSameLine": false
+    "bracketSameLine": true
   }
 }
