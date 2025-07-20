@@ -3,15 +3,17 @@ import { create } from 'zustand'
 import { type ILogEntry } from '@/types/logEntry'
 
 type LogsState = {
+  page: number
   logs: ILogEntry[]
   isLoading: boolean
   error: boolean
   fetchLogs: () => Promise<void>
-  setError: (value: boolean) => void
+  setPage: (value: number) => void
 }
 
 export const useLogsStore = create<LogsState>((set) => ({
   logs: [],
+  page: 1,
   isLoading: false,
   error: false,
 
@@ -29,5 +31,5 @@ export const useLogsStore = create<LogsState>((set) => ({
     }
   },
 
-  setError: (value) => set({ error: value })
+  setPage: (value) => set({ page: value })
 }))
