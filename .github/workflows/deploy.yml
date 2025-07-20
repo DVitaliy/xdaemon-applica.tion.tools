@@ -28,7 +28,7 @@ jobs:
             if [ -d "$APP_DIR/.git" ]; then
               echo "🔄 Pull repo..."
               cd $APP_DIR
-              git pull origin main
+              git pull origin test
             else
               echo "⬇️ Clone repo..."
               git clone $REPO_URL $APP_DIR
