@@ -5,11 +5,13 @@ import { useActionState, useEffect } from 'react'
 import { useToastContext } from '@/provider/ToastProvider'
 import { deleteLogEntryAction } from '@/lib/actions/deleteLogEntry'
 import { useLogsStore } from '@/store/useLogsStore'
+import { useModalContext } from '@/provider/ModalContext'
 
-export default function ConfirmDeleteComponent({ id, closeModal }: { id: string; closeModal: VoidFunction }) {
+export default function ConfirmDeleteComponent({ id }: { id: string }) {
   const [state, submit] = useActionState(deleteLogEntryAction, { success: false, error: '' })
   const { toast } = useToastContext()
   const { fetchLogs } = useLogsStore()
+  const { closeModal } = useModalContext()
 
   useEffect(() => {
     async function refreshLogs() {

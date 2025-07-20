@@ -5,11 +5,13 @@ import { createLogEntryAction } from '@/lib/actions/createLogEntry'
 import { useActionState, useEffect } from 'react'
 import { useToastContext } from '@/provider/ToastProvider'
 import { useLogsStore } from '@/store/useLogsStore'
+import { useModalContext } from '@/provider/ModalContext'
 
-export default function AddLogFormComponent({ closeModal }: { closeModal: VoidFunction }) {
+export default function AddLogFormComponent() {
   const [state, submit] = useActionState(createLogEntryAction, { success: false, error: '' })
   const { fetchLogs } = useLogsStore()
   const { toast } = useToastContext()
+  const { closeModal } = useModalContext()
 
   useEffect(() => {
     async function refreshLogs() {

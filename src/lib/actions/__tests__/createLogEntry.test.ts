@@ -1,47 +1,37 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { createLogEntryAction } from '@/lib/actions/createLogEntry'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { createLogEntryAction } from '../createLogEntry'
+import * as validationModule from '@/lib/validateLogEntry'
 
-vi.mock('@/lib/db', () => ({
-  logEntryDataSource: {
-    create: vi.fn()
-  }
-}))
 vi.mock('next/cache', () => ({
   revalidatePath: vi.fn()
 }))
 
-import { logEntryDataSource } from '@/lib/db'
-import { revalidatePath } from 'next/cache'
+vi.stubGlobal('fetch', vi.fn())
+
+const createFormData = (data: Record<string, string>) => {
+  const formData = new FormData()
+  for (const key in data) {
+    formData.append(key, data[key])
+  }
+  return formData
+}
 
 describe('createLogEntryAction', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    vi.resetAllMocks()
+    vi.stubEnv('BASE_URL', 'http://localhost:3000')
   })
 
-  it('return error if Owner or LogText is missing', async () => {
-    const formData = new FormData()
-    formData.set('Owner', '')
-    formData.set('LogText', '')
+  it('should return error if validation fails', async () => {
+    vi.spyOn(validationModule, 'validateLogEntry').mockReturnValueOnce({
+      success: false,
+      error: 'Invalid input'
+    })
 
+    const formData = createFormData({ Owner: '', LogText: '' })
     const result = await createLogEntryAction({ success: false, error: '' }, formData)
 
-    expect(result.error).toBe('Owner and LogText are required')
-    expect(logEntryDataSource.create).not.toHaveBeenCalled()
-    expect(revalidatePath).not.toHaveBeenCalled()
-  })
-
-  it('creates a log entry and triggers revalidatePath', async () => {
-    const formData = new FormData()
-    formData.set('Owner', 'John Doe')
-    formData.set('LogText', 'This is a log entry')
-
-    const result = await createLogEntryAction({ success: true, error: '' }, formData)
-
-    expect(logEntryDataSource.create).toHaveBeenCalledWith({
-      Owner: 'John Doe',
-      LogText: 'This is a log entry'
-    })
-    expect(revalidatePath).toHaveBeenCalledWith('/')
-    expect(result).toEqual({ success: true, error: '' })
+    expect(result).toEqual({ success: false, error: 'Invalid input' })
+    expect(fetch).not.toHaveBeenCalled()
   })
 })

@@ -4,6 +4,7 @@ import { type ILogEntry } from '@/types/logEntry'
 
 type LogsState = {
   page: number
+  limit: number
   logs: ILogEntry[]
   isLoading: boolean
   error: boolean
@@ -14,6 +15,7 @@ type LogsState = {
 export const useLogsStore = create<LogsState>((set) => ({
   logs: [],
   page: 1,
+  limit: 10,
   isLoading: false,
   error: false,
 

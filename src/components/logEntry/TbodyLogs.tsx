@@ -18,8 +18,8 @@ export default function TbodyLogsComponent({ logs, isLoading }: { logs: ILogEntr
     <tbody className="bg-white divide-y divide-gray-200">
       {logs.map(({ Owner, LogText, CreatedAt, UpdatedAt, id }) => (
         <tr key={id} className="hover:bg-gray-50 transition-colors duration-150 text-sm">
-          <td className="px-6 py-4 whitespace-nowrap">{Owner}</td>
-          <td className="px-6 py-4">{LogText}</td>
+          <td className="px-6 py-4 truncate max-w-32 whitespace-nowrap">{Owner}</td>
+          <td className="px-6 py-4 truncate max-w-xs">{LogText}</td>
           <td className="px-6 py-4">{new Date(CreatedAt).toLocaleString()}</td>
           <td className="px-6 py-4">{new Date(UpdatedAt).toLocaleString()}</td>
           <td className="whitespace-nowrap space-x-1 px-6">
@@ -33,10 +33,10 @@ export default function TbodyLogsComponent({ logs, isLoading }: { logs: ILogEntr
         </tr>
       ))}
       <Modal isShowing={!!isEditId} closeModal={() => setIsEditId(undefined)}>
-        <EditLogForm id={isEditId ?? ''} closeModal={() => setIsEditId(undefined)} />
+        <EditLogForm id={isEditId ?? ''} />
       </Modal>
       <Modal isShowing={!!isDeletedId} closeModal={() => setIsDeletedId(undefined)}>
-        <ConfirmDelete id={isDeletedId ?? ''} closeModal={() => setIsDeletedId(undefined)} />
+        <ConfirmDelete id={isDeletedId ?? ''} />
       </Modal>
     </tbody>
   )

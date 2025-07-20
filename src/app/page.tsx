@@ -6,22 +6,29 @@ import AddLogForm from '@/components/logEntry/AddLogForm'
 import Button from '@/components/ui/Button'
 import { useLogsStore } from '@/store/useLogsStore'
 import { useToastContext } from '@/provider/ToastProvider'
+import Pagination from '@/components/layout/Pagination'
 export const dynamic = 'force-dynamic'
 
 export default function HomePage() {
   const [searchTerm, setSearchTerm] = useState('')
-  const { logs, isLoading, error, fetchLogs } = useLogsStore()
+  const { logs, isLoading, error, fetchLogs, limit, page, setPage } = useLogsStore()
   const { toast } = useToastContext()
 
   const [isAddNewLog, setIsAddNewLog] = useState(false)
 
   const sortedFilteredLogs = useMemo(() => {
     const sorted = logs.toSorted((a, b) => new Date(b.CreatedAt).getTime() - new Date(a.CreatedAt).getTime())
-    if (searchTerm === '') return sorted
-    return sorted.filter(({ Owner, LogText }) => {
-      return Owner.toLowerCase().includes(searchTerm.toLowerCase()) || LogText.toLowerCase().includes(searchTerm.toLowerCase())
-    })
-  }, [logs, searchTerm])
+
+    const filtered =
+      searchTerm === ''
+        ? sorted
+        : sorted.filter(({ Owner, LogText }) => Owner.toLowerCase().includes(searchTerm.toLowerCase()) || LogText.toLowerCase().includes(searchTerm.toLowerCase()))
+
+    const start = (page - 1) * limit
+    const end = start + limit
+
+    return filtered.slice(start, end)
+  }, [logs, limit, page, searchTerm])
 
   useEffect(() => {
     fetchLogs()
@@ -69,7 +76,10 @@ export default function HomePage() {
                   type="text"
                   placeholder="Search logs..."
                   className="bg-white flex h-10 rounded-md border border-gray-300 px-3 py-2 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 md:text-sm pl-10 w-64"
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => {
+                    setPage(1) // Reset to first page on search
+                    setSearchTerm(e.target.value)
+                  }}
                   value={searchTerm}
                 />
               </div>
@@ -77,11 +87,12 @@ export default function HomePage() {
           </div>
         </div>
 
-        <LogsTable logs={sortedFilteredLogs} isLoading={isLoading} currentPage={1} totalPages={2} onPageChange={() => {}} />
+        <LogsTable logs={sortedFilteredLogs} isLoading={isLoading} />
+        <Pagination />
       </div>
 
       <Modal isShowing={isAddNewLog} closeModal={() => setIsAddNewLog(false)}>
-        <AddLogForm closeModal={() => setIsAddNewLog(false)} />
+        <AddLogForm />
       </Modal>
     </div>
   )
