@@ -8,8 +8,8 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & TButtonProps
 export default function SubmitButton({ children, ...props }: ButtonProps) {
   const { pending } = useFormStatus()
   return (
-    <Button type="submit" disabled={pending} {...props}>
-      {pending ? 'Adding...' : children}
+    <Button theme="primary" type="submit" disabled={pending} {...props}>
+      {pending ? 'Waiting...' : children}
     </Button>
   )
 }
