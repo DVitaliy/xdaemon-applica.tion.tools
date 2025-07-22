@@ -2,6 +2,9 @@
 
 This project is a fully responsive log management interface built with **Next.js 15**, **React 19**, **TypeScript**, and **Tailwind CSS** — without any third-party UI or form libraries.
 
+![Xnip2025-07-23_02-39-04](https://github.com/user-attachments/assets/90eb3e3c-a8e7-4960-8016-c3bc5bd33371)
+
+
 ## 🔧 Tech Stack
 
 - **Frontend:** React 19, Next.js 15 (App Router)
