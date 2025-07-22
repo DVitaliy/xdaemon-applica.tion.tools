@@ -10,7 +10,7 @@ export default function LogsTableComponent({ logs, isLoading }: ILogsTableProps)
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
         <thead>
-          <tr className="text-left text-xs text-gray-400 uppercase tracking-wider">
+          <tr className="text-left text-xs text-gray-600 uppercase tracking-wider">
             <th className="px-6 py-3">Owner</th>
             <th className="px-6 py-3">Log Text</th>
             <th className="px-6 py-3">Created At</th>

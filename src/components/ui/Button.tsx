@@ -9,7 +9,7 @@ export default function SubmitButton({ children, theme, size, ...props }: TButto
   let themeClasses = ''
   switch (theme) {
     case 'primary':
-      themeClasses = 'bg-blue-500 hover:bg-blue-600 text-white'
+      themeClasses = 'bg-blue-600 hover:bg-blue-700 text-white'
       break
     case 'secondary':
       themeClasses = 'bg-transparent border border-gray-300 hover:bg-gray-100 text-gray-700'
